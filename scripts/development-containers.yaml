@@ -1,0 +1,32 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.8.1
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: matrix-xmpp-appservice-development-containers
+  name: matrix-xmpp-appservice-development-containers
+spec:
+  containers:
+    - image: docker.io/library/postgres:17
+      env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: password
+        - name: POSTGRES_INITDB_ARGS
+          value: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
+      name: postgres
+      volumeMounts:
+        - mountPath: /etc/wireguard/vpn.conf
+          name: home-nik-sysadmin-charon-pods-deluge-wg-vpn.conf-host-0
+  volumes:
+    - hostPath:
+        path: /home/nik/sysadmin/charon/pods/deluge-wg/vpn.conf
+        type: File
+      name: home-nik-sysadmin-charon-pods-deluge-wg-vpn.conf-host-0
+    - name: matrix-xmpp-appservice-development-postgres-data-pvc
+      persistentVolumeClaim:
+        claimName: matrix-xmpp-appservice-development-postgres-data
