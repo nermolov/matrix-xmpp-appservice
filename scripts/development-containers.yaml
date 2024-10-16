@@ -26,6 +26,10 @@ spec:
           name: matrix-xmpp-appservice-development-postgres-pvc
     - image: docker.io/matrixdotorg/synapse:latest
       name: synapse
+      ports:
+        - containerPort: 8008
+          hostPort: 8008
+          protocol: TCP
       volumeMounts:
         - mountPath: /data:Z
           name: matrix-xmpp-appservice-development-matrix-pvc
