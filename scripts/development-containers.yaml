@@ -6,8 +6,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   labels:
-    app: matrix-xmpp-appservice-development-containers
-  name: matrix-xmpp-appservice-development-containers
+    app: matrix-xmpp-appservice-development
+  name: matrix-xmpp-appservice-development
 spec:
   containers:
     - image: docker.io/library/postgres:17
@@ -16,17 +16,23 @@ spec:
           value: postgres
         - name: POSTGRES_PASSWORD
           value: password
+        - name: POSTGRES_DB
+          value: synapse
         - name: POSTGRES_INITDB_ARGS
           value: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
       name: postgres
       volumeMounts:
-        - mountPath: /etc/wireguard/vpn.conf
-          name: home-nik-sysadmin-charon-pods-deluge-wg-vpn.conf-host-0
+        - mountPath: /var/lib/postgresql/data:Z
+          name: matrix-xmpp-appservice-development-postgres-pvc
+    - image: docker.io/matrixdotorg/synapse:latest
+      name: synapse
+      volumeMounts:
+        - mountPath: /data:Z
+          name: matrix-xmpp-appservice-development-matrix-pvc
   volumes:
-    - hostPath:
-        path: /home/nik/sysadmin/charon/pods/deluge-wg/vpn.conf
-        type: File
-      name: home-nik-sysadmin-charon-pods-deluge-wg-vpn.conf-host-0
-    - name: matrix-xmpp-appservice-development-postgres-data-pvc
+    - name: matrix-xmpp-appservice-development-postgres-pvc
       persistentVolumeClaim:
-        claimName: matrix-xmpp-appservice-development-postgres-data
+        claimName: matrix-xmpp-appservice-development-postgres
+    - name: matrix-xmpp-appservice-development-matrix-pvc
+      persistentVolumeClaim:
+        claimName: matrix-xmpp-appservice-development-matrix
